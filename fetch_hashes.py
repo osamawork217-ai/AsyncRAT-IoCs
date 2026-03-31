@@ -11,11 +11,11 @@ def fetch_hashes(limit=1000):
     if not api_key:
         raise ValueError("MB_API_KEY environment variable is not set")
 
-    print(f"[DEBUG] API key present: yes")
+    print("[DEBUG] API key present: yes")
     print(f"[DEBUG] API key length: {len(api_key)}")
 
     headers = {
-        "API-KEY": api_key,
+        "Auth-Key": api_key,
         "User-Agent": "GitHubActions-MalwareBazaar-Hash-Fetcher/1.0",
     }
 
@@ -31,14 +31,13 @@ def fetch_hashes(limit=1000):
     response.raise_for_status()
 
     json_data = response.json()
-    hashes = set()
-
     query_status = json_data.get("query_status")
     print(f"[DEBUG] query_status: {query_status}")
 
     if query_status != "ok":
         raise RuntimeError(f"Unexpected API response: {json_data}")
 
+    hashes = set()
     for sample in json_data.get("data", []):
         sha256 = sample.get("sha256_hash")
         if sha256 and len(sha256) == 64:
