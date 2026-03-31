@@ -21,6 +21,7 @@ def fetch_hashes(limit=1000):
 
     data = {
         "query": "get_recent",
+        "selector": "100",   # or "time" for latest 60 min additions
     }
 
     response = requests.post(URL, data=data, headers=headers, timeout=60)
@@ -34,7 +35,7 @@ def fetch_hashes(limit=1000):
     query_status = json_data.get("query_status")
     print(f"[DEBUG] query_status: {query_status}")
 
-    if query_status != "ok":
+    if query_status not in {"ok", "no_results"}:
         raise RuntimeError(f"Unexpected API response: {json_data}")
 
     hashes = set()
