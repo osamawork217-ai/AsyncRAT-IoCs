@@ -20,9 +20,12 @@ jobs:
 
       - name: Install dependencies
         run: pip install requests
-
+        
       - name: Run script
+        env:
+          MB_API_KEY: ${{ secrets.MB_API_KEY }}
         run: python fetch_hashes.py
+     
 
       - name: Commit and push changes
         run: |
