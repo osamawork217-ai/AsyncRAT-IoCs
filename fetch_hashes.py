@@ -1,5 +1,5 @@
-import requests
 import os
+import requests
 
 URL = "https://mb-api.abuse.ch/api/v1/"
 OUTPUT_FILE = "Malware_Bazaar_Recent.txt"
@@ -9,12 +9,17 @@ def fetch_hashes(limit=1000):
         "query": "get_recent"
     }
 
+    # Read the API key from the environment
+    api_key = os.getenv("MB_API_KEY")
+    if not api_key:
+        raise ValueError("MB_API_KEY environment variable not set")
+
     headers = {
-        "API-KEY": os.getenv("MB_API_KEY")
+        "API-KEY": api_key
     }
 
     response = requests.post(URL, data=data, headers=headers)
-    response.raise_for_status()
+    response.raise_for_status()  # <-- this triggers 401 if key missing/invalid
 
     json_data = response.json()
     hashes = set()
@@ -27,12 +32,10 @@ def fetch_hashes(limit=1000):
 
     return sorted(hashes)
 
-
 def save_hashes(hashes):
     with open(OUTPUT_FILE, "w") as f:
         for h in hashes:
             f.write(h + "\n")
-
 
 if __name__ == "__main__":
     hashes = fetch_hashes()
