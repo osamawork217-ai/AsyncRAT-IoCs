@@ -1,4 +1,5 @@
 import requests
+import os
 
 URL = "https://mb-api.abuse.ch/api/v1/"
 OUTPUT_FILE = "Malware_Bazaar_Recent.txt"
@@ -8,7 +9,11 @@ def fetch_hashes(limit=1000):
         "query": "get_recent"
     }
 
-    response = requests.post(URL, data=data)
+    headers = {
+        "API-KEY": os.getenv("MB_API_KEY")
+    }
+
+    response = requests.post(URL, data=data, headers=headers)
     response.raise_for_status()
 
     json_data = response.json()
