@@ -1,0 +1,33 @@
+name: Update MalwareBazaar Hashes
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # runs every 6 hours
+  workflow_dispatch:        # allows manual run
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run script
+        run: python fetch_hashes.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "hash-bot"
+          git config --global user.email "bot@users.noreply.github.com"
+          git add Malware_Bazaar_Recent.txt
+          git commit -m "Auto update hashes" || echo "No changes"
+          git push
